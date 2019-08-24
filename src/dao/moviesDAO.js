@@ -38,30 +38,19 @@ export default class MoviesDAO {
   }
 
   /**
+   * Ticket: Projection
    * Finds and returns movies originating from one or more countries.
    * Returns a list of objects, each object contains a title and an _id.
    * @param {string[]} countries - The list of countries.
    * @returns {Promise<CountryResult>} A promise that will resolve to a list of CountryResults.
    */
   static async getMoviesByCountry(countries) {
-    /**
-    Ticket: Projection
-
-    Write a query that matches movies with the countries in the "countries"
-    list, but only returns the title and _id of each movie.
-
-    Remember that in MongoDB, the $in operator can be used with a list to
-    match one or more values of a specific field.
-    */
-
     let cursor
     try {
-      // TODO Ticket: Projection
-      // Find movies matching the "countries" list, but only return the title
-      // and _id. Do not put a limit in your own implementation, the limit
-      // here is only included to avoid sending 46000 documents down the
-      // wire.
-      cursor = await movies.find().limit(1)
+      cursor = await movies.find(
+        { countries: { $in: countries } },
+        { projection: { title: 1 } },
+      )
     } catch (e) {
       console.error(`Unable to issue find command, ${e}`)
       return []
@@ -296,9 +285,9 @@ export default class MoviesDAO {
       const pipeline = [
         {
           $match: {
-            _id: ObjectId(id)
-          }
-        }
+            _id: ObjectId(id),
+          },
+        },
       ]
       return await movies.aggregate(pipeline).next()
     } catch (e) {
