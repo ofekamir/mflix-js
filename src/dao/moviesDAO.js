@@ -89,26 +89,16 @@ export default class MoviesDAO {
   }
 
   /**
+   * Ticket: Text and Subfield Search
    * Finds and returns movies matching a one or more genres.
    * @param {string[]} genre - The genres to match with.
    * @returns {QueryParams} The QueryParams for genre search
    */
   static genreSearchQuery(genre) {
-    /**
-    Ticket: Text and Subfield Search
-
-    Given an array of one or more genres, construct a query that searches
-    MongoDB for movies with that genre.
-    */
-
     const searchGenre = Array.isArray(genre) ? genre : genre.split(", ")
-
-    // TODO Ticket: Text and Subfield Search
-    // Construct a query that will search for the chosen genre.
-    const query = {}
+    const query = { genres: { $in: genre } }
     const project = {}
     const sort = DEFAULT_SORT
-
     return { query, project, sort }
   }
 
