@@ -96,7 +96,7 @@ export default class MoviesDAO {
    */
   static genreSearchQuery(genre) {
     const searchGenre = Array.isArray(genre) ? genre : genre.split(", ")
-    const query = { genres: { $in: genre } }
+    const query = { genres: { $in: searchGenre } }
     const project = {}
     const sort = DEFAULT_SORT
     return { query, project, sort }
@@ -173,8 +173,9 @@ export default class MoviesDAO {
     const queryPipeline = [
       matchStage,
       sortStage,
-      // TODO Ticket: Faceted Search
-      // Add the stages to queryPipeline in the correct order.
+      skipStage,
+      limitStage,
+      facetStage,
     ]
 
     try {
@@ -227,18 +228,8 @@ export default class MoviesDAO {
       return { moviesList: [], totalNumMovies: 0 }
     }
 
-    /**
-    Ticket: Paging
-
-    Before this method returns back to the API, use the "moviesPerPage" and
-    "page" arguments to decide the movies to display.
-
-    Paging can be implemented by using the skip() and limit() cursor methods.
-    */
-
-    // TODO Ticket: Paging
-    // Use the cursor to only return the movies that belong on the current page
-    const displayCursor = cursor.limit(moviesPerPage)
+    // Ticket: Paging - Use the cursor to only return the movies that belong on the current page
+    const displayCursor = cursor.skip(page * moviesPerPage).limit(moviesPerPage)
 
     try {
       const moviesList = await displayCursor.toArray()
