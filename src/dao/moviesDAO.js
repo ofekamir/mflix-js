@@ -260,16 +260,21 @@ export default class MoviesDAO {
       The $match stage is already completed. You will need to add a $lookup
       stage that searches the `comments` collection for the correct comments.
       */
-
-      // TODO Ticket: Get Comments
-      // Implement the required pipeline.
-      const pipeline = [
-        {
-          $match: {
-            _id: ObjectId(id),
-          },
-        },
-      ]
+// TODO Ticket: Get Comments
+// Implement the required pipeline.
+const pipeline = [
+  { $match: { _id: ObjectId(id) } },
+  { $lookup:
+    {
+      from: "comments",
+      let: { 'id': '$_id' },
+      pipeline: [
+         { $match: { $expr: {$eq: ['$movie_id', '$$id']} } },
+         { $sort: { date: -1 } },
+      ],
+      as: "comments"
+    }
+  }]
       return await movies.aggregate(pipeline).next()
     } catch (e) {
       /**
