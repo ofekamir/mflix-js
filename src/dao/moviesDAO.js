@@ -267,9 +267,9 @@ const pipeline = [
   { $lookup:
     {
       from: "comments",
-      let: { 'id': '$_id' },
+      let: { 'mid': '$_id' },
       pipeline: [
-         { $match: { $expr: {$eq: ['$movie_id', '$$id']} } },
+         { $match: { $expr: {$eq: ['$movie_id', '$$mid']} } },
          { $sort: { date: -1 } },
       ],
       as: "comments"
