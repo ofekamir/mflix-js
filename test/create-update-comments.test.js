@@ -49,11 +49,12 @@ describe("Create/Update Comments", async () => {
       date,
     )
 
+    console.log(`postCommentResult.insertedId: ${postCommentResult.insertedId}`)
+
     expect(postCommentResult.insertedCount).toBe(1)
     expect(postCommentResult.insertedId).not.toBe(null)
 
     const movieComments = (await MoviesDAO.getMovieByID(movieId)).comments
-
     expect(movieComments[0]._id).toEqual(postCommentResult.insertedId)
     expect(movieComments[0].text).toEqual(comment.text)
 
@@ -67,6 +68,7 @@ describe("Create/Update Comments", async () => {
       newCommentText,
       date,
     )
+
     expect(updateCommentResult.modifiedCount).toBe(1)
 
     const movieComments = (await MoviesDAO.getMovieByID(movieId)).comments

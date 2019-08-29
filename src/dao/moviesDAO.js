@@ -248,46 +248,37 @@ export default class MoviesDAO {
    * Gets a movie by its id
    * @param {string} id - The desired movie id, the _id in Mongo
    * @returns {MflixMovie | null} Returns either a single movie or nothing
-   */
-  static async getMovieByID(id) {
-    try {
-      /**
-      Ticket: Get Comments
-
+   *  Ticket: Get Comments
       Given a movie ID, build an Aggregation Pipeline to retrieve the comments
       matching that movie's ID.
-
       The $match stage is already completed. You will need to add a $lookup
-      stage that searches the `comments` collection for the correct comments.
-      */
-// TODO Ticket: Get Comments
-// Implement the required pipeline.
-const pipeline = [
-  { $match: { _id: ObjectId(id) } },
-  { $lookup:
-    {
-      from: "comments",
-      let: { 'mid': '$_id' },
-      pipeline: [
-         { $match: { $expr: {$eq: ['$movie_id', '$$mid']} } },
-         { $sort: { date: -1 } },
-      ],
-      as: "comments"
-    }
-  }]
+      stage that searches the `comments` collection for the correct comments.  
+    */
+  static async getMovieByID(id) {
+    try {
+      const pipeline = [
+        { $match: { _id: ObjectId(id) } },
+        {
+          $lookup: {
+            from: "comments",
+            let: { mid: ObjectId(id) },
+            pipeline: [
+              { $match: { $expr: { $eq: ["$movie_id", "$$mid"] } } },
+              { $sort: { date: -1 } },
+            ],
+            as: "comments",
+          },
+        },
+      ]
       return await movies.aggregate(pipeline).next()
     } catch (e) {
-      /**
-      Ticket: Error Handling
-
-      Handle the error that occurs when an invalid ID is passed to this method.
-      When this specific error is thrown, the method should return `null`.
-      */
-
       // TODO Ticket: Error Handling
+      // Handle the error that occurs when an invalid ID is passed to this method.
+      // When this specific error is thrown, the method should return `null`.
       // Catch the InvalidId error by string matching, and then handle it.
       console.error(`Something went wrong in getMovieByID: ${e}`)
-      throw e
+      return null
+      // throw e
     }
   }
 }
