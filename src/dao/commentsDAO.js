@@ -70,15 +70,10 @@ export default class CommentsDAO {
    */
   static async updateComment(commentId, userEmail, text, date) {
     try {
-      // TODO Ticket: Create/Update Comments
-      // Use the commentId and userEmail to select the proper comment, then
-      // update the "text" and "date" fields of the selected comment.
-      const updateResponse = await comments.updateOne(
-        { _Id: ObjectId(commentId), email: userEmail },
+      return await comments.updateOne(
+        { _id: ObjectId(commentId), email: userEmail },
         { $set: { text: text, date: date } },
       )
-
-      return updateResponse
     } catch (e) {
       console.error(`Unable to update comment: ${e}`)
       return { error: e }
