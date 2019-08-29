@@ -44,15 +44,14 @@ export default class CommentsDAO {
    */
   static async addComment(movieId, user, comment, date) {
     try {
-      const commentDoc = { 
-        name: user.name, 
-        email: user.email, 
-        movie_id: movieId, 
-        text: comment, 
-        date: date 
+      const commentDoc = {
+        name: user.name,
+        email: user.email,
+        movie_id: ObjectId(movieId),
+        text: comment,
+        date: date,
       }
-      const insertedComment = await comments.insertOne(commentDoc)
-      return insertedComment
+      return await comments.insertOne(commentDoc)
     } catch (e) {
       console.error(`Unable to post comment: ${e}`)
       return { error: e }
@@ -75,7 +74,7 @@ export default class CommentsDAO {
       // Use the commentId and userEmail to select the proper comment, then
       // update the "text" and "date" fields of the selected comment.
       const updateResponse = await comments.updateOne(
-        { _Id: commentId, email: userEmail },
+        { _Id: ObjectId(commentId), email: userEmail },
         { $set: { text: text, date: date } },
       )
 
@@ -101,7 +100,7 @@ export default class CommentsDAO {
       // Use the userEmail and commentId to delete the proper comment.
       const deleteResponse = await comments.deleteOne({
         _id: ObjectId(commentId),
-        email: userEmail
+        email: userEmail,
       })
 
       return deleteResponse
